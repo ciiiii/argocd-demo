@@ -1,0 +1,38 @@
+name: Publish to Docker registry
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  github:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Login to github registry
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ github.actor }}
+          DOCKER_PASSWORD: ${{ github.token }}
+          DOCKER_REGISTRY_URL: docker.pkg.github.com
+
+      - name: Build :tag
+        if: success()
+        run: docker build -t docker.pkg.github.com/${{ github.repository }}:${IMAGE_TAG} .
+
+      - name: Push to docker hub :tag
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push docker.pkg.github.com/${{ github.repository }}:${IMAGE_TAG}
+
+      - name: Retag
+        run: docker tag docker.pkg.github.com/${{ github.repository }}/echo-server:${IMAGE_TAG} docker.pkg.github.com/${{ github.repository }}/echo-server:latest
+    
+      - name: Push to docker hub with latest
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push docker.pkg.github.com/${{ github.repository }}:latest
