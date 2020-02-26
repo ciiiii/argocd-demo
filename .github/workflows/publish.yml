@@ -3,7 +3,7 @@ name: Publish to Docker registry
 on:
   push:
     paths-ignore:
-      - README.mds
+      - README.md
 
 jobs:
   github:
@@ -11,29 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Login to github registry
+      - name: Login to dockerhub
         uses: actions-hub/docker/login@master
         env:
-          DOCKER_USERNAME: ${{ github.actor }}
-          DOCKER_PASSWORD: ${{ github.token }}
-          DOCKER_REGISTRY_URL: docker.pkg.github.com
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build :tag
         if: success()
-        run: docker build -t docker.pkg.github.com/${{ github.repository }}/echo-server:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:${{ github.sha }} .
 
       - name: Push to docker hub :tag
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: push docker.pkg.github.com/${{ github.repository }}/echo-server:${{ github.sha }}
+          args: push ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:${{ github.sha }}
 
       - name: Retag
         if: success()
-        run: docker tag docker.pkg.github.com/${{ github.repository }}/echo-server:${{ github.sha }} docker.pkg.github.com/${{ github.repository }}/echo-server:latest
+        run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:${{ github.sha }} docker.pkg.github.com/${{ github.repository }}/echo-server:latest
 
       - name: Push to docker hub with latest
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: push docker.pkg.github.com/${{ github.repository }}/echo-server:latest
+          args: push ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:latest
