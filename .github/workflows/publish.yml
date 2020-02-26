@@ -20,17 +20,17 @@ jobs:
 
       - name: Build :tag
         if: success()
-        run: docker build -t docker.pkg.github.com/${{ github.repository }}/echo-server:${IMAGE_TAG} .
+        run: docker build -t docker.pkg.github.com/${{ github.repository }}/echo-server:${{ github.sha }} .
 
       - name: Push to docker hub :tag
         if: success()
         uses: actions-hub/docker@master
         with:
-          args: push docker.pkg.github.com/${{ github.repository }}/echo-server:${github.sha}
+          args: push docker.pkg.github.com/${{ github.repository }}/echo-server:${{ github.sha }}
 
       - name: Retag
         if: success()
-        run: docker tag docker.pkg.github.com/${{ github.repository }}/echo-server:${IMAGE_TAG} docker.pkg.github.com/${{ github.repository }}/echo-server:latest
+        run: docker tag docker.pkg.github.com/${{ github.repository }}/echo-server:${{ github.sha }} docker.pkg.github.com/${{ github.repository }}/echo-server:latest
 
       - name: Push to docker hub with latest
         if: success()
