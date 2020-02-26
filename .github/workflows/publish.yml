@@ -29,7 +29,7 @@ jobs:
 
       - name: Retag
         if: success()
-        run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:${{ github.sha }} docker.pkg.github.com/${{ github.repository }}/echo-server:latest
+        run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/echo-server:latest
 
       - name: Push to docker hub with latest
         if: success()
