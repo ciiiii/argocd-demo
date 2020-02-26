@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"net/http"
 )
@@ -8,7 +9,8 @@ import (
 // EchoServer ...
 func EchoServer(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte("pong"))
+	config := os.Getenv("CONFIG")
+	w.Write([]byte(fmt.Sprintf("pong from %s", config)))
 }
 
 func main() {
